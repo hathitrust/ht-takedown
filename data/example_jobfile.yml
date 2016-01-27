@@ -1,0 +1,14 @@
+:ticket: hts-111111
+:output_dir: /root/ # Will crete /root/hts-111111/ and place output in there.
+:parent_dir: /path/to/logs_by_server/ # This dir should contain dirs of logs.
+:skip_dirs:
+  # You can add a dir here to skip its logs, e.g.
+  # - sharbat
+:volumes:
+  # List volumes here
+  uc1.somevolume:
+    # Each volume can have any number of pairs of start and end
+    # times.  Only accesses within these windows are considered.
+    # The normal case is for only a single window.
+    - start: 2010-01-01 00:00:00
+      end: 2016-01-01 00:00:00

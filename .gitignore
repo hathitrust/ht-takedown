@@ -1,0 +1,4 @@
+results.db
+.bundle
+vendor/bundle
+.idea

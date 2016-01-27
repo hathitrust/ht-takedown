@@ -1,0 +1,18 @@
+:apps:
+  - /htd/aggregate
+  - /htd/pageimage
+  - /htd/pageocr
+  - /htd/pagecoordocr
+  - /htd/volume/aggregate
+  - /htd/volume/pageimage
+  - /htd/volume/pageocr
+  - /htd/volume/pagecoordocr
+  - /htd/article/aggregate
+  - /htd/article/pageimage
+  - /htd/article/pageocr
+  - /htd/article/pagecoordocr
+  - /cache/imgsrv/image
+  - /cgi/imgsrv/image
+  - /cgi/imgsrv/pdf
+  - /cgi/imgsrv/ocr
+  - /cgi/imgsrv/download/pdf
