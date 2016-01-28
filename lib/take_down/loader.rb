@@ -35,8 +35,8 @@ module TakeDown
 
         begin
           item[:http_code] = Integer(item[:http_code])
-          item[:page_number].collect! {|p| Integer(p)}
-          if item[:volume_id] == "1"
+          item[:page_number] = item[:page_number].collect {|p| Integer(p)} # Workaround for this array
+          if item[:volume_id] == "1"                               # being randomly frozen, unsure why
             puts "failed on line #{current_line}:::#{item.inspect}"
           end
           if item[:volume_id] && item[:http_code] >= 200 && item[:http_code] < 300
