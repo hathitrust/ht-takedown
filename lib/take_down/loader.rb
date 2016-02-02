@@ -27,7 +27,7 @@ module TakeDown
         begin
           item = parse_line(line)
         rescue ArgumentError, NoMethodError => e
-          puts "#{current_line}::PARSE::#{e.class}::#{line}"
+          error_line("PARSE", current_line, [], line, e)
           current_line += 1
           next
         end
@@ -35,15 +35,25 @@ module TakeDown
 
         begin
           item[:http_code] = Integer(item[:http_code])
-          item[:page_number] = item[:page_number].collect {|p| Integer(p)} # Workaround for this array
-          if item[:volume_id] == "1"                               # being randomly frozen, unsure why
-            puts "failed on line #{current_line}:::#{item.inspect}"
+          item[:page_number] = item[:page_number].collect do |p|
+            # We don't use collect! because this array gets frozen somehow.
+            if [nil, ""].include?(p)
+              p = -1
+              error_line("NOPAGE", current_line, item, line, -1)
+            end
+            Integer(p)
           end
+
+          if item[:volume_id] == "1"
+            error_line(current_line, item, line, nil)
+          end
+
           if item[:volume_id] && item[:http_code] >= 200 && item[:http_code] < 300
             insert(@db, item[:volume_id], item[:page_number], item[:access_date], item[:ip_token])
           end
-        rescue TypeError, SQLite3::ConstraintException => e
-          puts "#{current_line}::#{e.class}:::#{item.inspect}"
+
+        rescue ArgumentError, TypeError, SQLite3::ConstraintException => e
+          error_line("INSERT", current_line, item, line, e)
         end
         current_line += 1
       end
@@ -52,6 +62,12 @@ module TakeDown
 
 
     # private
+
+
+    def error_line(comment, line_number, item, line, exception = nil)
+      puts "#{comment}::#{line_number}::#{exception.class}::#{item}::::#{line}"
+    end
+
 
     def create_db
       if File.exists? @db_path
