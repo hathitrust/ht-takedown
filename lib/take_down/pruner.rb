@@ -20,7 +20,8 @@ module TakeDown
       command = "delete from results where volume_id=? and access_date not between datetime(?) and datetime(?);"
       volumes.keys.each do |volume_id|
         volumes[volume_id].each do |time_window|
-          @db.execute(command, volume_id, time_window[:start], time_window[:stop])
+          puts "Executing: #{command.sub('?', volume_id).sub('?', time_window[:start]).sub('?', time_window[:end])}"
+          @db.execute(command, volume_id, time_window[:start], time_window[:end])
         end
       end
     end
@@ -29,6 +30,7 @@ module TakeDown
     def delete_errant_volumes(volumes)
       volumes_literal = "\"#{volumes.keys.join('","')}\""
       command = "delete from results where volume_id not in (#{volumes_literal});"
+      puts "Executing: #{command}"
       @db.execute(command)
     end
 
