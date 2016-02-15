@@ -3,6 +3,7 @@ require_relative "take_down/loader"
 require_relative "take_down/pruner"
 require_relative "take_down/queryer"
 require_relative "take_down/reporter"
+require_relative "take_down/job"
 require "yaml"
 require "pathname"
 
@@ -13,7 +14,7 @@ module TakeDown
 
   def self.execute(job_file)
     # load files
-    job = YAML.load_file(job_file)
+    job = Job.new(YAML.load_file(job_file))
     app_list = YAML.load_file(File.join(path, "data/app_list.yml" ))[:apps]
 
     # create an output directory
@@ -53,8 +54,8 @@ module TakeDown
     reporter = Reporter.new(Queryer.new(loader.get_db))
     job[:volumes].keys.each do |volume_id|
       job[:volumes][volume_id].each do |time_window|
-        start_time = time_window["start"]
-        end_time = time_window["end"]
+        start_time = time_window[:start]
+        end_time = time_window[:end]
         reporter.add_volume_to_report(volume_id, start_time, end_time)
       end
     end
