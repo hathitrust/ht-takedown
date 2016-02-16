@@ -65,14 +65,14 @@ module TakeDown
 
     # Prune things we don't want
     unless progress[:pruner]
-      pruner = Pruner.new(loader.get_db)
+      pruner = Pruner.new(db)
       pruner.prune!(job["volumes"])
       progress[:pruner] = true
       File.write(progress_file, progress.to_yaml)
     end
 
     # Gather report data
-    reporter = Reporter.new(Queryer.new(loader.get_db))
+    reporter = Reporter.new(Queryer.new(db)
     job["volumes"].keys.each do |volume_id|
       job["volumes"][volume_id].each do |time_window|
         start_time = time_window["start"]
