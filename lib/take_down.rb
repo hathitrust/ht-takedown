@@ -16,12 +16,16 @@ module TakeDown
     # load files
     job = Job.new(YAML.load_file(job_file))
     app_list = YAML.load_file(File.join(path, "data/app_list.yml" ))[:apps]
-
+    
     # create an output directory
     output_dir = File.join(job[:output_dir], job[:ticket])
     `mkdir -p #{output_dir}`
     access_log_dir = File.join(output_dir, ".access_logs")
     `mkdir -p #{access_log_dir}`
+    
+    # detect progress
+    progress_file = File.join(output_dir, "progress.yml")
+    progress = Job.new(YAML.load_file(progress_file))
 
     # setup the grepper
     grepper = Grepper.new(app_list, job[:volumes].keys)
@@ -32,23 +36,36 @@ module TakeDown
     log_dirs -= (job[:skip_dirs] || [])
 
     # Begin grepping folders
-    grepped_access_logs = []
-    log_dirs.each do |relative_dir|
-      output_file_path = File.join access_log_dir, "#{relative_dir}-access.log"
-      grepped_access_logs << output_file_path
-      grepper.grep!(File.join(job[:parent_dir], relative_dir), output_file_path)
+    unless progress[:grepper]
+      grepped_access_logs = []
+      log_dirs.each do |relative_dir|
+        output_file_path = File.join access_log_dir, "#{relative_dir}-access.log"
+        grepped_access_logs << output_file_path
+        grepper.grep!(File.join(job[:parent_dir], relative_dir), output_file_path)
+      end
+      progress[:grepper] = true
+      File.write(progress_file, progress.to_yaml)
     end
 
     # Load into sql
-    db_path = File.join output_dir, ".results.db"
-    loader = Loader.new(db_path)
-    grepped_access_logs.each do |grepped_access_log|
-      loader.load!(grepped_access_log)
+    unless progress[:loader]
+      db_path = File.join output_dir, ".results.db"
+      loader = Loader.new(db_path)
+      grepped_access_logs.each do |grepped_access_log|
+        loader.load!(grepped_access_log)
+      end
+      progress[:loader] = true
+      File.write(progress_file, progress.to_yaml)
     end
 
+
     # Prune things we don't want
-    pruner = Pruner.new(loader.get_db)
-    pruner.prune!(job[:volumes])
+    unless progress[:pruner]
+      pruner = Pruner.new(loader.get_db)
+      pruner.prune!(job[:volumes])
+      progress[:pruner] = true
+      File.write(progress_file, progress.to_yaml)
+    end
 
     # Gather report data
     reporter = Reporter.new(Queryer.new(loader.get_db))
