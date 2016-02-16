@@ -16,7 +16,7 @@ module TakeDown
   def self.get_paths(job)
     app_list_file = File.join(path, "data/app_list.yml" )
     output_dir = File.join(job["output_dir"], job["ticket"])
-    access_log_dir = File.join(output_dir, ".access_logs")
+    access_log_dir = File.join(output_dir, "grepped_access_logs")
     progress_file = File.join(output_dir, "progress.yml")
     return progress_file, app_list_file, output_dir, access_log_dir
   end
@@ -71,7 +71,7 @@ module TakeDown
     
     
     # Load into sql
-    db_path = File.join output_dir, ".results.db"
+    db_path = File.join output_dir, "results.db"
     if progress[:loader]
       db = SQLite3::Database.new @db_path
     else
@@ -110,10 +110,6 @@ module TakeDown
       File.write(progress_file, progress.to_yaml)
     end
     
-    
-    # Cleanup temporary files
-    `rm -f #{File.join(access_log_dir, "*")}`
-    `rm -f #{db_path}`
   end
   
   
