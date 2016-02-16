@@ -72,7 +72,7 @@ module TakeDown
     end
 
     # Gather report data
-    reporter = Reporter.new(Queryer.new(db)
+    reporter = Reporter.new(Queryer.new(db))
     job["volumes"].keys.each do |volume_id|
       job["volumes"][volume_id].each do |time_window|
         start_time = time_window["start"]
