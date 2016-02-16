@@ -51,7 +51,7 @@ module TakeDown
     log_dirs = get_log_dirs(job["parent_dir"], job["skip_dirs"])
     input_output_map = {}
     log_dirs.each do |relative_dir| 
-      input_dir = File.join job["parent_dir]"], relative_dir
+      input_dir = File.join job["parent_dir"], relative_dir
       input_output_map[input_dir] = File.join(access_log_dir, "#{relative_dir}-access.log")
     end
     
