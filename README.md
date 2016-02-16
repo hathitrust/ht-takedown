@@ -18,8 +18,8 @@ A tool to collect log data in response to takedown requests
 
 ## Improvements
 
-1. Grepping the logs takes on the order of 4 hours, but you're most likely
+1. ~~Grepping the logs takes on the order of 4 hours, but you're most likely
    to experience problems later on in the process.  At present, there's
-   no way to pause a job or restart a failed job.  
+   no way to pause a job or restart a failed job.~~  
 2. Accesses that do not access a page number are represented as accessing
    page -1.  This is probably not correct.
