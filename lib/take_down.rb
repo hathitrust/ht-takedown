@@ -31,7 +31,11 @@ module TakeDown
   end
   
   
-  
+  def self.get_configs(app_list_file, progress_file)
+    app_list = YAML.load_file(app_list_file)[:apps]
+    `touch #{progress_file}`
+    progress = YAML.load_file(progress_file)
+  end
   
 
   def self.execute(job_file)
@@ -44,8 +48,7 @@ module TakeDown
     `mkdir -p #{access_log_dir}`
     
     # open configs
-    app_list = YAML.load_file(app_list_file)[:apps]
-    progress = YAML.load_file(progress_file)
+    app_list, progress = get_configs(app_list_file, progress_file)
     
     # dirs to read from, dirs to create
     log_dirs = get_log_dirs(job["parent_dir"], job["skip_dirs"])
