@@ -48,9 +48,9 @@ module TakeDown
     end
 
     # Load into sql
-    unless progress[:loader]
       db_path = File.join output_dir, ".results.db"
       loader = Loader.new(db_path)
+    unless progress[:loader]
       grepped_access_logs.each do |grepped_access_log|
         loader.load!(grepped_access_log)
       end

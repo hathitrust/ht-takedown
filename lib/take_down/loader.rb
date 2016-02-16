@@ -71,17 +71,18 @@ module TakeDown
 
     def create_db
       if File.exists? @db_path
-        `rm -f #{@db_path}`
-      end
-      db = SQLite3::Database.new @db_path
-      db.execute <<-SQL
+        db = SQLite3::Database.new @db_path
+      else
+        db = SQLite3::Database.new @db_path
+        db.execute <<-SQL
         create table results (
           volume_id varchar(40) NOT NULL,
           page_number int NOT NULL,
           access_date datetime NOT NULL,
           ip_token varchar(30) NOT NULL
         );
-      SQL
+        SQL
+      end
       return db
     end
 
