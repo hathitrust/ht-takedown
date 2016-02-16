@@ -20,8 +20,8 @@ module TakeDown
       command = "delete from results where volume_id=? and access_date not between datetime(?) and datetime(?);"
       volumes.keys.each do |volume_id|
         volumes[volume_id].each do |time_window|
-          puts "Executing: #{command.sub('?', volume_id).sub('?', time_window["start"]).sub('?', time_window["end"])}"
-          @db.execute(command, volume_id, time_window["start"], time_window["end"])
+          puts "Executing: #{command.sub('?', volume_id).sub('?', time_window["start"].iso8601).sub('?', time_window["end"].iso8601)}"
+          @db.execute(command, volume_id, time_window["start"].iso8601, time_window["end"].iso8601)
         end
       end
     end
