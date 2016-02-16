@@ -3,6 +3,7 @@ require_relative "take_down/loader"
 require_relative "take_down/pruner"
 require_relative "take_down/queryer"
 require_relative "take_down/reporter"
+require "sqlite3"
 require "yaml"
 require "pathname"
 
@@ -47,9 +48,13 @@ module TakeDown
     end
 
     # Load into sql
-      db_path = File.join output_dir, ".results.db"
+    db_path = File.join output_dir, ".results.db"
+    if progress[:loader]
+      db = SQLite3::Database.new @db_path
+    else
+      `rm -f #{db_path}`
       loader = Loader.new(db_path)
-    unless progress[:loader]
+      db = loader.get_db
       grepped_access_logs.each do |grepped_access_log|
         loader.load!(grepped_access_log)
       end

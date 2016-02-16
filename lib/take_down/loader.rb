@@ -71,7 +71,7 @@ module TakeDown
 
     def create_db
       if File.exists? @db_path
-        db = SQLite3::Database.new @db_path
+        raise RuntimeError, "Database at #{@db_path} exists, delete it or skip this step."
       else
         db = SQLite3::Database.new @db_path
         db.execute <<-SQL
