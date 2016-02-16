@@ -27,7 +27,7 @@ module TakeDown
     progress = YAML.load_file(progress_file)
 
     # setup the grepper
-    grepper = Grepper.new(app_list, job[:volumes].keys)
+    grepper = Grepper.new(app_list, job["volumes"].keys)
 
     # Get the folders we need
     log_dirs = Dir.entries(job["parent_dir"]).select { |entry| File.directory? File.join(job["parent_dir"], entry )}
