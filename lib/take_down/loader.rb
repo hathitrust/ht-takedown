@@ -6,7 +6,12 @@ require "cgi"
 
 module TakeDown
 
+  # This class is responsible for parsing log lines and 
+  # inserting the results into a database. 
   class Loader
+    
+    # Create a Loader
+    # @param db_path [String] Path of where to create the database.
     def initialize(db_path)
       @line_regex = /\A([^ ]+) [^ ]+ [^ ]+ \[([^\]]*)\] "([^"]*)" ([\d]+) (\d+|-) "[^"]*" "[^"]*"/
       @mfp_regex =  /\A\w+\s(.*)\s\S+\z/
@@ -14,12 +19,19 @@ module TakeDown
       @db = nil
     end
 
-
+    
+    # @return [SQLite3::Database]
     def get_db
       @db ||= create_db
     end
 
 
+    # Parse and load all lines from the given file into
+    # the database.  Note that accesses without a page number
+    # are assigned the page number -1.
+    # @param access_log_file_path [String] Path to the file
+    #  containing the access log lines.
+    # @return [Loader]
     def load!(access_log_file_path)
       @db = get_db
       current_line = 0
@@ -63,12 +75,14 @@ module TakeDown
 
     # private
 
-
+    # Give a reasonable error output if a line can't be parsed.
     def error_line(comment, line_number, item, line, exception = nil)
       puts "#{comment}::#{line_number}::#{exception.class}::#{item}::::#{line}"
     end
 
 
+    # Create the database.
+    # @return [SQLite3::Database]
     def create_db
       if File.exists? @db_path
         raise RuntimeError, "Database at #{@db_path} exists, delete it or skip this step."
@@ -87,12 +101,14 @@ module TakeDown
     end
 
 
+    # Insert a parsed record into the database.
     def insert(db, volume_id, page_number, access_date, ip_token)
       command = "insert into results values (?, ?, datetime(?), ?);"
       db.execute(command, volume_id, page_number, access_date, ip_token)
     end
 
 
+    # Parse a single line.
     def parse_line(line)
       host_ip, date, method_file_protocol, http_code, _ = @line_regex.match(line).captures
       file = @mfp_regex.match(method_file_protocol).captures[0]

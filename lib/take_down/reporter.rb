@@ -3,8 +3,10 @@ require "time"
 
 module TakeDown
 
+  # Builds reports
   class Reporter
-
+    
+    # @param queryer [Queryer]
     def initialize(queryer)
       @queryer = queryer
       @data = nil
@@ -13,7 +15,11 @@ module TakeDown
       @report = nil
     end
 
-
+    
+    # Add a volume:time_window pair to the report.
+    # @param volume_id [String] The volume's id, e.g. mdp.10239103
+    # @param start_time [Time] The beginning of the time window.
+    # # @param end_time [Time] The end of the time window.
     def add_volume_to_report(volume_id, start_time, end_time)
       data[volume_id] ||= {}
       data[volume_id][:total_accesses] ||= 0
@@ -21,7 +27,7 @@ module TakeDown
       data[volume_id][:end] = end_time
     end
 
-
+    # @return [String] The report, formatted.
     def report
       @report ||= build_report
     end
@@ -29,7 +35,7 @@ module TakeDown
 
     private
 
-
+    # Build the report.
     def build_report
       report = []
       report[0] = "Total accesses across all volumes: #{data[:total_accesses]}"
@@ -41,11 +47,16 @@ module TakeDown
     end
 
 
+    # @return [Hash] Hash of volume_id:Hash pairs.  The 
+    #   nested hashes contain :total_accesses, :pages,
+    #   :accesses, :total_users
+    #   The parent hash contains :total_accesses, :total_users
     def data
       @data ||= collect_data
     end
 
 
+    # Create the hash of data from queries
     def collect_data
       data = {}
       data[:total_accesses] = @queryer.total_accesses
@@ -65,6 +76,9 @@ module TakeDown
     end
 
 
+    # Create a report for a specific volume.  These
+    # are used to create full reports.
+    # @return [String]
     def report_for_volume(volume_id)
       report = "Identifier: #{volume_id}"
       report += "\n\tAvailability began: #{data[volume_id][:start]}"

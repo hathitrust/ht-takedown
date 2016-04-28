@@ -4,7 +4,12 @@ require "time"
 
 module TakeDown
 
+  # This class queries the database for
+  # different types of information we might
+  # be interested in.
   class Queryer
+    
+    # @param db [SQLite3::Database]
     def initialize(db)
       @db = db
     end
@@ -22,7 +27,7 @@ module TakeDown
 
     # Total number of unique ip tokens
     # This is the maximum number of users
-    # that accessed the volumes
+    # that accessed the volumes.
     # @return [Fixnum]
     def total_max_users
       command = <<-SQL

@@ -8,11 +8,12 @@ require "yaml"
 require "pathname"
 
 module TakeDown
-  def self.path
-    @path ||= Pathname.new(__FILE__).parent.parent.realdirpath.to_s
-  end
-  
-  
+
+  # Get the paths described by the job file.
+  # @param job [String] The path to the job file.
+  # @return [String, String, String, String] The filepaths for the
+  #   progress tracker, list of apps to search for, the output dir,
+  #   and the directory containing the access logs; respectively.
   def self.get_paths(job)
     app_list_file = File.join(path, "data/app_list.yml" )
     output_dir = File.join(job["output_dir"], job["ticket"])
@@ -22,6 +23,13 @@ module TakeDown
   end
   
   
+  # Get the list of directories within the parent dir,
+  # removing '.', '..', and the skip directories.  Includes
+  # hidden directories.
+  # @param parent_dir [String] The parent directory path.
+  # @param skip_dirs [Array<String>] List of directory *names* 
+  #   (not paths) that should not be included.
+  # @return [Array<String>] The directory *paths*..
   def self.get_log_dirs(parent_dir, skip_dirs)
     # Get the folders we need
     log_dirs = Dir.entries(parent_dir).select { |entry| File.directory? File.join(parent_dir, entry )}
@@ -31,13 +39,22 @@ module TakeDown
   end
   
   
+  # Get the hash result of loading the yaml for the application list 
+  # and the progress file.
+  # @param app_list_file [String] Path to the application list file
+  # @param progress_file [String] Path to the progress file.  If it
+  #   does not exist, it is created.
+  # @return [Hash, Hash] App list and progress, respectively.
   def self.get_configs(app_list_file, progress_file)
     app_list = YAML.load_file(app_list_file)[:apps]
     `touch #{progress_file}`
     progress = YAML.load_file(progress_file)
+    return app_list, progress
   end
   
-
+  
+  # Do everything
+  # @param job_file [String] Path of the job file.
   def self.execute(job_file)
     # open job file
     job = YAML.load_file(job_file)
