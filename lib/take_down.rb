@@ -33,13 +33,15 @@ module TakeDown
   # @param parent_dir [String] The parent directory path.
   # @param skip_dirs [Array<String>] List of directory *names* 
   #   (not paths) that should not be included.
+  # @param sub_dir_path [String] Path to be appended under the
+  #   discovered dirs, if any.  Ex. "logs"
   # @return [Array<String>] The directory *paths*..
-  def self.get_log_dirs(parent_dir, skip_dirs)
+  def self.get_log_dirs(parent_dir, skip_dirs, sub_dir_path)
     # Get the folders we need
     log_dirs = Dir.entries(parent_dir).select { |entry| File.directory? File.join(parent_dir, entry )}
     log_dirs -= [".", ".."]
     log_dirs -= (skip_dirs || [])
-    return log_dirs
+    return log_dirs.map { |log_dir| File.join(log_dir, sub_dir_path)}
   end
   
   
@@ -72,7 +74,7 @@ module TakeDown
     app_list, progress = get_configs(app_list_file, progress_file)
     
     # dirs to read from, dirs to create
-    log_dirs = get_log_dirs(job["parent_dir"], job["skip_dirs"])
+    log_dirs = get_log_dirs(job["parent_dir"], job["skip_dirs"], job["sub_dir_path"])
     input_output_map = {}
     log_dirs.each do |relative_dir| 
       input_dir = File.join job["parent_dir"], relative_dir

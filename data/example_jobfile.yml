@@ -1,6 +1,7 @@
 ticket: hts-111111
 output_dir: /root/ # Will crete /root/hts-111111/ and place output in there.
 parent_dir: /path/to/logs_by_server/ # This dir should contain dirs of logs.
+sub_dir_path: /logs # subdirs to append under the dirs within parentdir
 skip_dirs:
   # You can add a dir here to skip its logs, e.g.
   # - sharbat
