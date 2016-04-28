@@ -9,6 +9,10 @@ require "pathname"
 
 module TakeDown
 
+  def self.path
+    @path ||= Pathname.new(__FILE__).parent.parent.realdirpath.to_s
+  end
+
   # Get the paths described by the job file.
   # @param job [String] The path to the job file.
   # @return [String, String, String, String] The filepaths for the
