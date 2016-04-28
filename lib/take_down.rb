@@ -10,7 +10,7 @@ require "pathname"
 module TakeDown
 
   def self.path
-    @path ||= Pathname.new(__FILE__).parent.realdirpath.to_s
+    @path ||= Pathname.new(__FILE__).parent.parent.realdirpath.to_s
   end
 
   # Get the paths described by the job file.
