@@ -1,3 +1,5 @@
+> :warning: If we want to collect log data, this is not the way to do it. Do not use this.
+
 # ht-takedown
 A tool to collect log data in response to takedown requests
 
